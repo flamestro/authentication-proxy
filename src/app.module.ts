@@ -1,8 +1,8 @@
-import {MiddlewareConsumer, Module, NestMiddleware, NestModule} from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import {AuthenticatorMiddleware} from "./authenticator.middleware";
-import {ProxyMiddleware} from "./proxy.middleware";
+import { AuthenticatorMiddleware } from './authenticator.middleware';
+import { ProxyMiddleware } from './proxy.middleware';
 
 @Module({
   imports: [],
@@ -11,9 +11,6 @@ import {ProxyMiddleware} from "./proxy.middleware";
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-        .apply(AuthenticatorMiddleware, ProxyMiddleware)
-        .forRoutes('*');
+    consumer.apply(AuthenticatorMiddleware, ProxyMiddleware).forRoutes('*');
   }
 }
-
