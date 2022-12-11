@@ -2,11 +2,12 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { loginView } from './view/loginView';
 import { randomUUID } from 'crypto';
+import { tooManyAttempts } from './view/tooManyAttempts';
 
-const ttlForTries = 6000000; // 100 mins
+const ttlForTries = 5 * 60 * 1000; // 5 mins
 let nextCleanForTries = createDateInTheFuture(ttlForTries);
-const ttlForAuthorizedUsersList = 1200000; // 20 mins
-const maxLoginAttempts = 10;
+const ttlForAuthorizedUsersList = 20 * 60 * 1000; // 20 mins
+const maxLoginAttempts = 20;
 const authorizedUsers = [];
 let loginAttempts = 0;
 let nextCleanOfAuthorizedUsers = createDateInTheFuture(
@@ -60,6 +61,8 @@ export class AuthenticatorMiddleware implements NestMiddleware {
       authorizedUsers.includes(req.cookies['authorization'])
     ) {
       next();
+    } else if (loginAttempts > maxLoginAttempts) {
+      return res.send(tooManyAttempts);
     } else {
       loginAttempts += 1;
       return res.send(loginView);
