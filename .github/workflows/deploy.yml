@@ -33,9 +33,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Dispatch Deploy Event to Deployment Repo
-        uses: flamestro/repository-event-dispatch-action@v1.0.1
+        uses: flamestro/repository-event-dispatch-action@v1.3.0
         with:
-          token: ${{ secrets.PAT_DISPATCH_SERVER_DEPLOYMENT }}
+          token: ${{ secrets.PAT_REPOSITORY_DISPATCH }}
           event: TRIGGER_DEPLOYMENT
           repository: ${{ secrets.DEPLOYMENT_REPO }}
           owner: flamestro
