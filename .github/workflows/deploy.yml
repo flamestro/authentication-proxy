@@ -27,7 +27,7 @@ jobs:
         run: yarn build
 
       - name: Publish Docker Image to Github Packages
-        uses: flamestro/build-push-github-action@v1.1.0
+        uses: flamestro/build-push-github-action@v1.2.1
         with:
           token: ${{ secrets.PAT_WRITE_PACKAGES }}
 
