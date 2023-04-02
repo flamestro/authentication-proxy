@@ -29,7 +29,7 @@ jobs:
       - name: Publish Docker Image to Github Packages
         uses: flamestro/build-push-github-action@v1.1.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_WRITE_PACKAGES }}
 
       - name: Dispatch Deploy Event to Deployment Repo
         uses: flamestro/repository-event-dispatch-action@v1.0.1
