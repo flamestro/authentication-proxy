@@ -6,7 +6,7 @@ import { tooManyAttemptsView } from './view/tooManyAttemptsView';
 
 // General config
 const ttlForTries = 5 * 60 * 1000; // 5 mins
-const ttlForAuthorizedUsers = 20 * 60 * 1000; // 20 mins
+const ttlForAuthorizedUsers = 7 * 24 * 60 * 60 * 1000; // 7 days
 const maxLoginAttempts = 20;
 
 // hacky way of remembering users and login attempts

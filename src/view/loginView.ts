@@ -48,8 +48,8 @@ export const loginView = `
                                                     headers: {
                                                       'authorization': 'Basic ' + document.getElementById('username').value + ':' + document.getElementById('password').value
                                                     },}).then(_ => location.reload()); return false;">
-            <input type="text" name="username" id="username" placeholder="Username"/>
-            <input type="password" name="password" id="password" placeholder="Password"/>
+            <input type="text" name="username" id="username" placeholder="Username" autocomplete="username"/>
+            <input type="password" name="password" id="password" autocomplete="current-password" placeholder="Password"/>
             <input type="submit" value="Login" />
         </form>
     </div>
