@@ -4,6 +4,9 @@ import { loginView } from './view/loginView';
 import { randomUUID } from 'crypto';
 import { tooManyAttemptsView } from './view/tooManyAttemptsView';
 
+const USER_NAME = process.env.USER_NAME;
+const PASSWORD = process.env.PASSWORD;
+
 // General config
 const ttlForTries = 5 * 60 * 1000; // 5 mins
 const ttlForAuthorizedUsers = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -74,7 +77,7 @@ export class AuthenticatorMiddleware implements NestMiddleware {
 
     const isAuthorizedViaHeader =
       req.headers['authorization'] ===
-      `Basic ${process.env.USER_NAME}:${process.env.PASSWORD}`;
+      `Basic ${USER_NAME}:${PASSWORD}`;
 
     const isAuthorizedViaCookie =
       req.cookies &&
