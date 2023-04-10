@@ -25,6 +25,9 @@ export const loginView = `
      height: 100%;  
      font-size: 1.5rem; 
      }
+     #submit {
+        cursor: pointer;
+     }
      @media only screen and (max-width: 600px) {
       input {
             width: 20rem; 
@@ -50,7 +53,7 @@ export const loginView = `
                                                     },}).then(_ => location.reload()); return false;">
             <input type="text" name="username" id="username" placeholder="Username" autocomplete="username"/>
             <input type="password" name="password" id="password" autocomplete="current-password" placeholder="Password"/>
-            <input type="submit" value="Login" />
+            <input id="submit" type="submit" value="Login" />
         </form>
     </div>
 </div>
