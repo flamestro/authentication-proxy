@@ -7,7 +7,7 @@ import { noCredentialsConfiguredView } from "./view/noCredentialsConfiguredView"
 
 const config = {
   ttlForTries: convertMinuteToMs(30),
-  ttlForAuthorizedUsers: convertDaysToMs(7),
+  ttlForAuthorizedUsers: convertDaysToMs(30),
   maxLoginAttempts: 20,
   userName: process.env.USER_NAME,
   password: process.env.PASSWORD,
