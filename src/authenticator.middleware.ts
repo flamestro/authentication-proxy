@@ -26,13 +26,16 @@ export const authenticatorMiddleware = (req: Request, res: Response, next: NextF
     return res.send(noCredentialsConfiguredView);
   }
   if (isUserIdTTLExpired()) {
+    console.log("Cleaning UserId's");
     cleanupKnownUserIds();
   }
 
   if (isLoginAttemptTTLExpired()) {
+    console.log("Cleaning Attempts");
     cleanupAttempts();
   }
 
+  console.log("Login attempted");
   const hasLoginAttemptsLeft = loginAttempts < config.maxLoginAttempts;
 
   const isAuthorizedViaHeader = req.headers["authorization"] === `Basic ${config.userName}:${config.password}`;
@@ -40,11 +43,14 @@ export const authenticatorMiddleware = (req: Request, res: Response, next: NextF
   const isAuthorizedViaCookie = req.cookies && req.cookies["authorization"] && authorizedUsers.includes(req.cookies["authorization"]);
 
   if (hasLoginAttemptsLeft && isAuthorizedViaHeader) {
+    console.log("Successful Login");
     rememberUser(res);
     next();
   } else if (isAuthorizedViaCookie) {
+    console.log("Authorized user enters the proxy");
     next();
   } else if (!hasLoginAttemptsLeft) {
+    console.log("Too many failed attempts");
     return res.send(tooManyAttemptsView(nextCleanDateForTries));
   } else {
     loginAttempts += 1;
