@@ -4,7 +4,7 @@ export const loginView = `
 <head>
     <meta charset="UTF-8">
     <title>Authentication Proxy</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <style>
     * {
      font-size: 1.7rem;
@@ -21,7 +21,7 @@ export const loginView = `
      align-items: center; 
      width: 100%;
      }
-     
+
      #wrapper {
      display: flex; 
      flex-direction: column; 
@@ -40,7 +40,7 @@ export const loginView = `
     <script type="text/javascript">
    
     const onSubmit = () => {
-        document.getElementById('submitWrapper').innerHTML = '<i class="fa fa-spinner fa-spin"></i>Loading'
+        document.getElementById('submitWrapper').innerHTML = 'Loading'
         const authValue = 'Basic ' + document.getElementById('username').value + ':' + document.getElementById('password').value
         fetch("/", 
         {
