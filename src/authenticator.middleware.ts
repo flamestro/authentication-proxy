@@ -3,13 +3,16 @@ import { loginView } from "./view/loginView";
 import { randomUUID } from "crypto";
 import { tooManyAttemptsView } from "./view/tooManyAttemptsView";
 import { noCredentialsConfiguredView } from "./view/noCredentialsConfiguredView";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 const config = {
   ttlForTries: convertMinuteToMs(30),
   ttlForAuthorizedUsers: convertDaysToMs(30),
   maxLoginAttempts: 20,
-  userName: "abc",
-  password: "abc",
+  userName: process.env.USER_NAME!,
+  password: process.env.PASSWORD!,
 };
 
 const authorizedUsers = [];
