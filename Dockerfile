@@ -4,8 +4,8 @@ FROM node:18
 # Create app directory
 WORKDIR /usr/src/app
 
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package*.json ./
+COPY package.json ./
+COPY yarn.lock ./
 
 # Install app dependencies
 RUN yarn install
@@ -17,4 +17,4 @@ COPY . .
 RUN yarn run build
 
 # Start the server using the production build
-CMD [ "node", "dist/main.js" ]
+CMD [ "node", "dist/server.js" ]

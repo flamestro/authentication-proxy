@@ -1,4 +1,3 @@
-import { Injectable, NestMiddleware } from "@nestjs/common";
 import { NextFunction, Request, Response } from "express";
 import { loginView } from "./view/loginView";
 import { randomUUID } from "crypto";
@@ -9,8 +8,8 @@ const config = {
   ttlForTries: convertMinuteToMs(30),
   ttlForAuthorizedUsers: convertDaysToMs(30),
   maxLoginAttempts: 20,
-  userName: process.env.USER_NAME,
-  password: process.env.PASSWORD,
+  userName: "abc",
+  password: "abc",
 };
 
 const authorizedUsers = [];
@@ -19,39 +18,36 @@ let loginAttempts = 0;
 let nextCleanDateForTries = createDateInTheFuture(config.ttlForTries);
 let nextCleanDateForAuthorizedUsers = createDateInTheFuture(config.ttlForAuthorizedUsers);
 
-@Injectable()
-export class AuthenticatorMiddleware implements NestMiddleware {
-  use(req: Request, res: Response, next: NextFunction) {
-    if (!config.password || !config.userName) {
-      return res.send(noCredentialsConfiguredView);
-    }
-    if (isUserIdTTLExpired()) {
-      cleanupKnownUserIds();
-    }
-
-    if (isLoginAttemptTTLExpired()) {
-      cleanupAttempts();
-    }
-
-    const hasLoginAttemptsLeft = loginAttempts < config.maxLoginAttempts;
-
-    const isAuthorizedViaHeader = req.headers["authorization"] === `Basic ${config.userName}:${config.password}`;
-
-    const isAuthorizedViaCookie = req.cookies && req.cookies["authorization"] && authorizedUsers.includes(req.cookies["authorization"]);
-
-    if (hasLoginAttemptsLeft && isAuthorizedViaHeader) {
-      rememberUser(res);
-      next();
-    } else if (isAuthorizedViaCookie) {
-      next();
-    } else if (!hasLoginAttemptsLeft) {
-      return res.send(tooManyAttemptsView(nextCleanDateForTries));
-    } else {
-      loginAttempts += 1;
-      return res.send(loginView);
-    }
+export const authenticatorMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  if (!config.password || !config.userName) {
+    return res.send(noCredentialsConfiguredView);
   }
-}
+  if (isUserIdTTLExpired()) {
+    cleanupKnownUserIds();
+  }
+
+  if (isLoginAttemptTTLExpired()) {
+    cleanupAttempts();
+  }
+
+  const hasLoginAttemptsLeft = loginAttempts < config.maxLoginAttempts;
+
+  const isAuthorizedViaHeader = req.headers["authorization"] === `Basic ${config.userName}:${config.password}`;
+
+  const isAuthorizedViaCookie = req.cookies && req.cookies["authorization"] && authorizedUsers.includes(req.cookies["authorization"]);
+
+  if (hasLoginAttemptsLeft && isAuthorizedViaHeader) {
+    rememberUser(res);
+    next();
+  } else if (isAuthorizedViaCookie) {
+    next();
+  } else if (!hasLoginAttemptsLeft) {
+    return res.send(tooManyAttemptsView(nextCleanDateForTries));
+  } else {
+    loginAttempts += 1;
+    return res.send(loginView);
+  }
+};
 
 function createDateInTheFuture(futureMs: number) {
   return new Date(Date.now() + futureMs);
