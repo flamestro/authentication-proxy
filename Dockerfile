@@ -17,4 +17,4 @@ COPY . .
 RUN yarn run build
 
 # Start the server using the production build
-CMD [ "node", "dist/server.js" ]
+CMD [ "node", "dist/server/server.js" ]

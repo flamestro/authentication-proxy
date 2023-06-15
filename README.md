@@ -2,36 +2,24 @@
 
 A proxy application that allows you to authenticate requests before proxying to your real applications.
 
-PS: It is a bit hacky I guess ^^
-
 ## Installation
 
 ```bash
-$ npm install
+$ yarn
 ```
 
 ## Running the app
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+$ yarn start
 ```
 
-## Test
+## Using Mongo as persistence layer
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+create a .env file with the following env variables.
+```text
+MODE=MONGO
+MONGO_DB_URL=<YOUR_MONGO_URL>
+MONGO_DB_DATABASE=DB_NAME
+MONGO_DB_COLLECTION=COLLECTION_NAME
 ```
