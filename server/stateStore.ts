@@ -46,6 +46,7 @@ export class StateStore {
   private inMemoryState: State;
 
   constructor() {
+    console.log(`initializing statestore in ${mode === "MONGO" ? "Mongo" : "Memory"} mode`);
     if (mode === "MONGO") {
       this.client = new MongoClient(uri);
       this.collection = this.client.db(mongoDatabase).collection(mongoCollection);
@@ -57,7 +58,7 @@ export class StateStore {
     let result: State | undefined = undefined;
     if (mode === "MONGO") {
       result = ((await this.collection.findOne({ _id: "SINGLETON_STATE" } as any)) as unknown as State) || undefined;
-      if (result === null) {
+      if (!result) {
         await this.collection.insertOne(this.inMemoryState as any);
         result = this.inMemoryState;
       }
@@ -70,7 +71,7 @@ export class StateStore {
 
   public async updateState(state: State) {
     if (mode === "MONGO") {
-      await this.collection.insertOne(state as any);
+      await this.collection.updateOne({ _id: state._id } as any, { $set: state }, { upsert: true });
     } else {
       this.inMemoryState = state;
     }

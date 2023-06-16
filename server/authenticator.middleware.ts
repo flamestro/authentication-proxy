@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { loginView } from "../src/view/loginView";
+import { loginView } from "../src/view/Login/loginView";
 import { randomUUID } from "crypto";
-import { tooManyAttemptsView } from "../src/view/tooManyAttemptsView";
-import { noCredentialsConfiguredView } from "../src/view/noCredentialsConfiguredView";
+import { tooManyAttemptsView } from "../src/view/ErrorPages/TooManyAttempts/tooManyAttemptsView";
+import { noCredentialsConfiguredView } from "../src/view/ErrorPages/noCredentialsConfiguredView";
 import * as dotenv from "dotenv";
 import { StateStore } from "./stateStore";
 dotenv.config();
@@ -11,7 +11,7 @@ const config = {
   maxLoginAttempts: 20,
   userName: process.env.USER_NAME!,
   password: process.env.PASSWORD!,
-  ttlForTries: convertMinuteToMs(30),
+  ttlForTries: convertMinuteToMs(15),
   ttlForAuthorizedUsers: convertDaysToMs(30),
 };
 
@@ -39,7 +39,6 @@ export const authenticatorMiddleware = async (req: Request, res: Response, next:
 
   const isAuthorizedViaCookie = req.cookies && req.cookies["authorization"] && state.authorizedUsers.includes(req.cookies["authorization"]);
 
-  await stateStore.updateState(state);
   if (hasLoginAttemptsLeft && isAuthorizedViaHeader) {
     console.log("Successful Login");
     rememberUser(res, state);
@@ -50,9 +49,10 @@ export const authenticatorMiddleware = async (req: Request, res: Response, next:
     next();
   } else if (!hasLoginAttemptsLeft) {
     console.log("Too many failed attempts");
-    return res.send(tooManyAttemptsView(state.nextCleanDateForTries));
+    return res.send(tooManyAttemptsView(new Date(state.nextCleanDateForTries)));
   } else {
     state.loginAttempts += 1;
+    await stateStore.updateState(state);
     return res.send(loginView);
   }
 };
@@ -76,6 +76,7 @@ function cleanupAttempts(state) {
   state.nextCleanDateForTries = createDateInTheFuture(config.ttlForTries);
   state.loginAttempts = 0;
 }
+
 function isLoginAttemptTTLExpired(state) {
   return state.nextCleanDateForTries.getTime() <= new Date(Date.now()).getTime();
 }
