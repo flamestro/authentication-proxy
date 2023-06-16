@@ -44,19 +44,26 @@ export class StateStore {
   private client: MongoClient;
   private collection: Collection<Document>;
   private inMemoryState: State;
+  private usingMongo = false;
 
   constructor() {
-    console.log(`initializing statestore in ${mode === "MONGO" ? "Mongo" : "Memory"} mode`);
-    if (mode === "MONGO") {
-      this.client = new MongoClient(uri);
-      this.collection = this.client.db(mongoDatabase).collection(mongoCollection);
+    const preferringMongo = mode === "MONGO";
+    console.log(`initializing statestore in ${preferringMongo ? "Mongo" : "Memory"} mode`);
+    if (preferringMongo) {
+      try {
+        this.client = new MongoClient(uri);
+        this.collection = this.client.db(mongoDatabase).collection(mongoCollection);
+        this.usingMongo = true;
+      } catch (e) {
+        console.error("Failed to connect to mongo, falling back to inmemory solution", e);
+      }
     }
     this.inMemoryState = { ...initialState };
   }
 
   public async getState() {
     let result: State | undefined = undefined;
-    if (mode === "MONGO") {
+    if (this.usingMongo) {
       result = ((await this.collection.findOne({ _id: "SINGLETON_STATE" } as any)) as unknown as State) || undefined;
       if (!result) {
         await this.collection.insertOne(this.inMemoryState as any);
@@ -65,18 +72,18 @@ export class StateStore {
     } else {
       result = this.inMemoryState;
     }
-    console.log(`Getting State. Mongo: ${mode === "MONGO"} ${JSON.stringify({ ...result, authorizedUsers: ["HIDDEN"] } as State)}`);
+    console.log(`Getting State. Mongo: ${this.usingMongo} ${JSON.stringify({ ...result, authorizedUsers: ["HIDDEN"] } as State)}`);
     return result;
   }
 
   public async updateState(state: State) {
-    if (mode === "MONGO") {
+    if (this.usingMongo) {
       await this.collection.updateOne({ _id: state._id } as any, { $set: state }, { upsert: true });
     } else {
       this.inMemoryState = state;
     }
 
-    console.log(`Updating State. Mongo: ${mode === "MONGO"} ${JSON.stringify({ ...state, authorizedUsers: ["HIDDEN"] } as State)}`);
+    console.log(`Updating State. Mongo: ${this.usingMongo} ${JSON.stringify({ ...state, authorizedUsers: ["HIDDEN"] } as State)}`);
   }
 
   public async close() {
