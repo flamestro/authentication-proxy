@@ -85,8 +85,4 @@ export class StateStore {
 
     console.log(`Updating State. Mongo: ${this.usingMongo} ${JSON.stringify({ ...state, authorizedUsers: ["HIDDEN"] } as State)}`);
   }
-
-  public async close() {
-    await this.client.close();
-  }
 }
