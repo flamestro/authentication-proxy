@@ -64,9 +64,15 @@ export class StateStore {
   public async getState() {
     let result: State | undefined = undefined;
     if (this.usingMongo) {
-      result = ((await this.collection.findOne({ _id: "SINGLETON_STATE" } as any)) as unknown as State) || undefined;
-      if (!result) {
-        await this.collection.insertOne(this.inMemoryState as any);
+      try {
+        result = ((await this.collection.findOne({ _id: "SINGLETON_STATE" } as any)) as unknown as State) || undefined;
+        if (!result) {
+          await this.collection.insertOne(this.inMemoryState as any);
+          result = this.inMemoryState;
+        }
+      } catch (e) {
+        console.error("Can't use mongo to getState, switching to InMemory", e);
+        this.usingMongo = false;
         result = this.inMemoryState;
       }
     } else {
@@ -78,7 +84,13 @@ export class StateStore {
 
   public async updateState(state: State) {
     if (this.usingMongo) {
-      await this.collection.updateOne({ _id: state._id } as any, { $set: state }, { upsert: true });
+      try {
+        await this.collection.updateOne({ _id: state._id } as any, { $set: state }, { upsert: true });
+      } catch (e) {
+        console.error("Can't use mongo to getState, switching to InMemory", e);
+        this.usingMongo = false;
+        this.inMemoryState = state;
+      }
     } else {
       this.inMemoryState = state;
     }
