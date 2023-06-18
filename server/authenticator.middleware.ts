@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 import { tooManyAttemptsView } from "../src/view/ErrorPages/TooManyAttempts/tooManyAttemptsView";
 import { noCredentialsConfiguredView } from "../src/view/ErrorPages/noCredentialsConfiguredView";
 import * as dotenv from "dotenv";
-import { StateStore } from "./stateStore";
+import { StateStore } from "./store/stateStore";
 dotenv.config();
 
 const config = {
