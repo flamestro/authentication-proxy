@@ -7,7 +7,7 @@ import * as express from "express";
 dotenv.config();
 
 const REDIRECT_URL = process.env.REDIRECT_URL!;
-const PORT = 80;
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 80;
 
 const app = express();
 
